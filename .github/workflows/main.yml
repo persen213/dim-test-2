@@ -1,0 +1,20 @@
+name: Build Mod
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: find . -iname '*.zip' -not -path './.git/*' > zips.txt
+      - run: cat zips.txt
+      - run: unzip -o -q "$(head -1 zips.txt)" -d project
+      - run: find project -name ci.sh > ci.txt
+      - run: bash "$(head -1 ci.txt)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mod-jar
+          path: out/*.jar
